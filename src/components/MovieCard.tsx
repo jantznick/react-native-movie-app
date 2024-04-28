@@ -1,16 +1,38 @@
+import React from 'react';
 import { Dimensions, Text, TouchableWithoutFeedback, View, Image } from 'react-native';
 
 const {width, height} = Dimensions.get('window');
 
-export const MovieCard = (props: {
-    item: number
-    handleClick: () => void
-}) => {
-    const {item, handleClick} = props;
+interface trendingMovieType {
+    "backdrop_path": string,
+    "id": number,
+    "original_title": string,
+    "overview": string,
+    "poster_path": string,
+    "media_type": string,
+    "adult": boolean,
+    "title": string,
+    "original_language": string,
+    "genre_ids": number[],
+    "popularity": number,
+    "release_date": string,
+    "video": boolean,
+    "vote_average": number,
+    "vote_count": number
+}
+
+export const MovieCard = ({item, handleClick}) => {
+    const {poster_path, title} = item;
+
+    const handleMovieSelect = () => {
+        console.log(item);
+        handleClick()
+    }
+
     return (
-        <TouchableWithoutFeedback onPress={handleClick}>
+        <TouchableWithoutFeedback onPress={handleMovieSelect}>
             <Image
-                src={'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpenji.co%2Fwp-content%2Fuploads%2F2023%2F01%2FUntitled-design-59.jpg&f=1&nofb=1&ipt=ac5e82681a71372e5e55a52a553c483230ac50750a92fbd5e9a8c1baefaa436f&ipo=images'}
+                src={`https://image.tmdb.org/t/p/w500${poster_path}`}
                 style={{
                     width: width*0.6,
                     height: height*0.4

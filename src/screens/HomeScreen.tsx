@@ -1,34 +1,68 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bars3CenterLeftIcon, MagnifyingGlassIcon } from 'react-native-heroicons/outline';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { styles } from '../theme';
 import { TrendingMovies } from '../components/TrendingMovies';
 import { MovieList } from '../components/MovieList';
+import { getMovieData, endpoints } from '../api/moviedb';
 
 const ios = Platform.OS == 'ios';
 
 export const HomeScreen = () => {
-    const [trending, setTrending] = useState([1, 2, 3])
-    const [upcoming, setUpcoming] = useState([1, 2, 3])
-    const [topRated, setTopRated] = useState([1, 2, 3])
+    const [trending, setTrending] = useState([])
+    const [upcoming, setUpcoming] = useState([])
+    const [topRated, setTopRated] = useState([])
+    const [loading, setLoading] = useState({
+        'trending': true,
+        'upcoming': true,
+        'topRated': true
+    })
 
-    console.log(process.env)
-    // const url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc';
-    // const options = {
-    // method: 'GET',
-    // headers: {
-    //     accept: 'application/json',
-    //     Authorization: `Bearer ${process.env.TMDBTOKEN}`
-    // }
-    // };
+    useEffect(() => {
+        if (loading.trending) {
+            const movieData = getMovieData('trending');
 
-    // fetch(url, options)
-    // .then(res => res.json())
-    // .then(json => console.log(json))
-    // .catch(err => console.error('error:' + err));
+            movieData.then(x => {
+                if (x && x.results) {
+                    setTrending(x.results);
+                    setLoading({
+                        ...loading,
+                        'trending': false
+                    });
+                }
+            })
+        }
+        if (loading.upcoming) {
+            const movieData = getMovieData('upcoming');
+
+            movieData.then(x => {
+                if (x && x.results) {
+                    setUpcoming(x.results);
+                    setLoading({
+                        ...loading,
+                        'upcoming': false
+                    });
+                }
+            })
+        }
+        if (loading.topRated) {
+            const movieData = getMovieData('topRated');
+
+            movieData.then(x => {
+                if (x && x.results) {
+                    setTopRated(x.results);
+                    setLoading({
+                        ...loading,
+                        'topRated': false
+                    });
+                }
+            })
+        }
+    })
 
 	return (
         <View className="flex-1 bg-neutral-800">
@@ -47,11 +81,11 @@ export const HomeScreen = () => {
                 contentContainerStyle={{paddingBottom: 10}}
             >
 
-                <TrendingMovies data={trending} />
+                {trending.length > 0 && <TrendingMovies title="Trending Movies" data={trending} />}
 
-                <MovieList title='Upcoming Movies' data={upcoming} />
+                {upcoming.length > 0 && <TrendingMovies title='Upcoming Movies' data={upcoming} />}
 
-                <MovieList title='Top Rated Movies' data={topRated} />
+                {topRated.length > 0 && <TrendingMovies title='Top Rated Movies' data={topRated} />}
             </ScrollView>
         </View>
 	);
