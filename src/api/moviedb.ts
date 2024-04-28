@@ -28,10 +28,11 @@ export const getMovieData = async (type: string) => {
     }
     try {
         const endpointKey = `${type}MovieEndpoint`;
-        const response = await fetch(endpoints[endpointKey].url, options)
+        const response = await fetch(endpoints[type].url, options)
         const data = await response.json()
         return data
     } catch (error) {
+        console.log('err')
         console.log(error)
     }
 }
